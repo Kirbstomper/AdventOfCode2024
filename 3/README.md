@@ -22,5 +22,11 @@ do\(\)|mul\(\d*,\d*\)|don't\(\)
 find and remove all don'ts, along with anything until a do is hit ( i did this manually because lazy)
 don't\(\)
 
-find and remove all do's
-do\(\)
+Filter to only mul(num1, num2) operations
+
+mul\(\d*,\d*\)
+
+Then filter to only the factors comma deliminated
+
+\d*,\d*\
+
