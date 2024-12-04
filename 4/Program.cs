@@ -27,16 +27,19 @@ for (int r = 0; r < lines[0].Length; r++)
     for (int c = 0; c < lines[0].Length; c++)
     {
 
-        if (lines[r][c] == 'X' || lines[r][c] == 'S')
+        if (lines[r][c] == 'A')
         {
             //Lines
             try
             {
-                var test = new string([lines[r][c], lines[r][c + 1], lines[r][c + 2], lines[r][c + 3]]);
-                if (test == XMAS || test == BACKWARDS)
+                var test = new string([lines[r - 1][c - 1], lines[r][c], lines[r + 1][c + 1]]);
+                if (test == "MAS" || test == "SAM")
                 {
-                    ans++;
+                    var test2 = new string([lines[r + 1][c - 1], lines[r][c], lines[r - 1][c + 1]]);
+                    if (test2 == "SAM" || test2 == "MAS")
+                        ans++;
                 }
+
 
             }
             catch
@@ -44,50 +47,8 @@ for (int r = 0; r < lines[0].Length; r++)
 
 
             }
-            //Diag
-            try
-            {
-                var test = new string([lines[r][c], lines[r - 1][c + 1], lines[r - 2][c + 2], lines[r - 3][c + 3]]);
-                if (test == XMAS || test == BACKWARDS)
-                {
-                    ans++;
-                }
-            }
-            catch
-            {
 
 
-            }
-            try
-            {
-                var test = new string([lines[r][c], lines[r + 1][c + 1], lines[r + 2][c + 2], lines[r + 3][c + 3]]);
-                if (test == XMAS || test == BACKWARDS)
-                {
-                    ans++;
-                }
-            }
-            catch
-            {
-
-
-            }
-
-            //Up and down
-
-            try
-            {
-                var test = new string([lines[r][c], lines[r + 1][c], lines[r + 2][c], lines[r + 3][c]]);
-                if (test == XMAS || test == BACKWARDS)
-                {
-                    ans++;
-                }
-            }
-            catch
-            {
-
-            }
-
-    
         }
     }
 
