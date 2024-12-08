@@ -2,12 +2,12 @@
 Console.WriteLine("Program One");
 
 
-using StreamReader reader = new("input1.txt");
+using StreamReader reader = new("input.txt");
 
-string? text = reader.ReadLine();
-while (text != null)
+string? line = reader.ReadLine();
+while (line != null)
 {
 
-    text = reader.ReadLine();
+    line = reader.ReadLine();
 
 }
