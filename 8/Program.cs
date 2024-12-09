@@ -16,7 +16,7 @@ int ybound = 0;
 while (line != null)
 {
     //adding to the map values
-    var split = line.Select(c => c).ToList();
+    var split = line.Trim().Select(c => c).ToList();
     for (int i = 0; i < split.Count; i++)
     {
         char c = split[i];
@@ -53,22 +53,61 @@ foreach (char x in ants.Keys)
             //Calculate the annode
             var xdiff = ants[x][a].Item1 - ants[x][otherA].Item1;
             var ydiff = ants[x][a].Item2 - ants[x][otherA].Item2;
+
+            for(int i = 1; i<1000; i++){
+            nodes.Add((ants[x][a].Item1 + xdiff*i, ants[x][a].Item2 + ydiff*i));
+            nodes.Add((ants[x][otherA].Item1 - xdiff*i, ants[x][otherA].Item2 - ydiff*i));
+            nodes.Add((ants[x][a].Item1 - xdiff*i, ants[x][a].Item2 - ydiff*i));
+            nodes.Add((ants[x][otherA].Item1 + xdiff*i, ants[x][otherA].Item2 + ydiff*i));
+            }
             nodes.Add((ants[x][a].Item1 + xdiff, ants[x][a].Item2 + ydiff));
             nodes.Add((ants[x][otherA].Item1 - xdiff, ants[x][otherA].Item2 - ydiff));
+
+             nodes.Add((ants[x][a].Item1 + xdiff*2, ants[x][a].Item2 + ydiff*2));
+            nodes.Add((ants[x][otherA].Item1 - xdiff*2, ants[x][otherA].Item2 - ydiff*2));
+
+              nodes.Add((ants[x][a].Item1 + xdiff*3, ants[x][a].Item2 + ydiff*3));
+            nodes.Add((ants[x][otherA].Item1 - xdiff*3, ants[x][otherA].Item2 - ydiff*3));
         }
+
         ants[x].Remove(ants[x][a]);
         a--;
     }
 }
 var ans = 0;
 
+using StreamReader reader2 = new("input_text.txt");
+line = reader2.ReadLine();
+int y = 0;
+HashSet<(int, int)> test = new HashSet<(int, int)>(); //map of annode pos
+
+while (line != null)
+{
+    var split = line.Trim().Select(c => c).ToList();
+    for (int i = 0; i < split.Count; i++)
+    {
+        char c = split[i];
+        if (c != '.')
+        {
+            test.Add((i, y));
+        }
+    }
+    y++;
+   // Console.WriteLine("line:" +y);
+    line = reader2.ReadLine();
+    //Console.WriteLine(line);
+}
+
 //Count the nodes within map bounds
 foreach ((int, int) a in nodes)
-{
+{   
     if (a.Item1 >= 0 && a.Item1 < xbound && a.Item2 >= 0 && a.Item2 < ybound)
     {
-        ans++;
+        
+    ans++;
+        
     }
 }
 
+test.ToList().ForEach(x => Console.WriteLine(x));
 Console.WriteLine(ans);
