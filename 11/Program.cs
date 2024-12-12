@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Buffers;
+using System.Collections.Specialized;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Microsoft.VisualBasic;
 
 Console.WriteLine("Day 11");
@@ -14,63 +16,75 @@ List<String> nums = line.Split(" ").ToList();
 Dictionary<string, string> calcs = new Dictionary<string, string>();
 Dictionary<string, (string, string)> splits = new Dictionary<string, (string, string)>();
 Dictionary<int, bool> even = new Dictionary<int, bool>();
+Stack<(string, int, List<string>)> rocks = new Stack<(string, int, List<string>)>(2038686383);
 
-Stack<(string, int)> rocks = new Stack<(string, int)>(2038686383);
+Dictionary<string, string[]> next = new Dictionary<string, string[]>();
 
-int ans = 0;
-//Add initial to stack
-foreach (string s in nums)
-{
-    rocks.Push((s, 0));
-}
+long ans = Solve(nums.ToArray(), 0, new Dictionary<string, Dictionary<int, long>>());
 
-
-while (rocks.Count != 0)
-{
-
-    var r = rocks.Pop();
-
-    if (r.Item2 == 50)
-    {
-        // Console.Write(r.Item1 + " ");
-        ans++;
-        continue;
-    }
-
-    if (r.Item1 == "0")
-    {
-        rocks.Push(("1", r.Item2 + 1));
-        continue;
-    }
-    if (!even.ContainsKey(r.Item1.Length))
-    {
-        even[r.Item1.Length] = r.Item1.Length % 2 == 0;
-    }
-    if (even[r.Item1.Length])
-    {
-        //Console.WriteLine("splitting: " + r);
-        if (!splits.ContainsKey(r.Item1))
-        {
-            splits[r.Item1] = (long.Parse(r.Item1.Substring(0, r.Item1.Length / 2)).ToString(), long.Parse(r.Item1.Substring(r.Item1.Length / 2)).ToString());
-
-        }
-        var real = splits[r.Item1];
-        rocks.Push((real.Item2, r.Item2 + 1));
-        rocks.Push((real.Item1, r.Item2 + 1));
-    }
-    else
-    {
-        if (!calcs.ContainsKey(r.Item1))
-        {
-            calcs[r.Item1] = (long.Parse(r.Item1) * 2024).ToString();
-        }
-        rocks.Push((calcs[r.Item1], r.Item2 + 1));
-    }
-}
 
 //nums.ToList().ForEach(n => Console.WriteLine(n));
 
 
+
+
+
+static long Solve(string[] nums, int blink, Dictionary<string, Dictionary<int, long>> cache)
+{
+    var ans = 0L;
+
+    foreach (string s in nums)
+    {
+
+        var solved_ans = 0L;
+
+        if (cache.ContainsKey(s))
+        {
+            if (cache[s].ContainsKey(blink))
+            {
+                solved_ans += cache[s][blink];
+                ans += cache[s][blink];
+                continue;
+            }
+
+        }
+        if (blink == 75)
+        {
+            //Console.Write(s + " ");
+            //record in cache
+            ans += 1;
+            continue;
+        }
+
+        if (s == "0")
+        {
+            solved_ans += Solve(["1"], blink + 1, cache);
+
+        }
+        else if (s.Length % 2 == 0)
+        {
+            //Console.WriteLine("splitting: " + r);
+
+            var real = (long.Parse(s.Substring(0, s.Length / 2)).ToString(), long.Parse(s.Substring(s.Length / 2)).ToString());
+
+            solved_ans += Solve([real.Item1, real.Item2], blink + 1, cache);
+        }
+        else
+        {
+            var str = (long.Parse(s) * 2024).ToString();
+            solved_ans += Solve([str], blink + 1, cache);
+        }
+        if (!cache.ContainsKey(s))
+        {
+            cache[s] = new Dictionary<int, long>();
+        }
+        cache[s].Add(blink, solved_ans);
+        ans += solved_ans;
+
+    }
+    return ans;
+
+}
 Console.WriteLine();
 
 Console.WriteLine(ans);
