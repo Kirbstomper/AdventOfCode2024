@@ -18,8 +18,8 @@ while (line != null)
     var targ_raw = reader.ReadLine().Split(",").Select(long.Parse).ToArray();
 
 
-    //targ_raw[0] = targ_raw[0] + 10000000000000;
-    //targ_raw[1] = targ_raw[1] + 10000000000000;
+    targ_raw[0] = targ_raw[0] + 10000000000000;
+    targ_raw[1] = targ_raw[1] + 10000000000000;
 
     double b_press = (targ_raw[1] * (double)a_raw[0] - targ_raw[0] * (double)a_raw[1])
                     / (b_raw[1] * (double)a_raw[0] - b_raw[0] * (double)a_raw[1]);
