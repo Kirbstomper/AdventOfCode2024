@@ -18,21 +18,21 @@ while (line != null)
     var targ_raw = reader.ReadLine().Split(",").Select(long.Parse).ToArray();
 
 
-    targ_raw[0] = targ_raw[0] + 10000000000000;
-    targ_raw[1] = targ_raw[1] + 10000000000000;
+    //targ_raw[0] = targ_raw[0] + 10000000000000;
+    //targ_raw[1] = targ_raw[1] + 10000000000000;
 
-    double y = (targ_raw[1] * (double)a_raw[0] - targ_raw[0] * (double)a_raw[1])
+    double b_press = (targ_raw[1] * (double)a_raw[0] - targ_raw[0] * (double)a_raw[1])
                     / (b_raw[1] * (double)a_raw[0] - b_raw[0] * (double)a_raw[1]);
-    double x = (targ_raw[0] - y * b_raw[0]) / a_raw[0];
+    double a_press = (targ_raw[0] - b_press * b_raw[0]) / a_raw[0];
     
-    Console.WriteLine(x);
+    Console.WriteLine(a_press);
 
-    Console.WriteLine(y);
+    Console.WriteLine(b_press);
 
-    if (double.IsInteger(x) && double.IsInteger(y))
+    if (double.IsInteger(a_press) && double.IsInteger(b_press))
     {
         Console.WriteLine("addin");
-        ans += ((long)x * 3) + (long)y;
+        ans += ((long)a_press * 3) + (long)b_press;
     }
 
     line = reader.ReadLine();
