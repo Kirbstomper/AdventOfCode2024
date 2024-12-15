@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Microsoft.VisualBasic;
 
 Console.WriteLine("Program One");
 
@@ -10,7 +11,8 @@ var readingInput = false;
 string? line = reader.ReadLine();
 var inputs = "";
 var map = new List<List<char>>();
-var robot_pos = (24, 24);
+var robot_pos = (0, 0);
+var lines = 0;
 while (line != null)
 {
 
@@ -23,7 +25,22 @@ while (line != null)
     if (!readingInput)
     {
         //populate map
-        map.Add(line.ToList());
+        map.Add(string.Join("", line.ToList().Select(c =>
+        {
+            if (c == '#')
+                return "##";
+            if (c == 'O')
+                return "[]";
+            if (c == '@')
+                return "@.";
+            return "..";
+        }).ToList()).ToList());
+
+        if (map[lines].Contains('@'))
+        {
+            robot_pos = (lines, map[lines].IndexOf('@'));
+        }
+        lines++;
     }
     else
     {
@@ -35,6 +52,11 @@ while (line != null)
 
 }
 
+foreach (var l in map)
+{
+    l.ForEach(Console.Write);
+    Console.WriteLine();
+}
 Console.WriteLine(inputs);
 
 
@@ -43,12 +65,6 @@ Console.WriteLine(inputs);
 foreach (var i in inputs)
 {
     move(map, i, robot_pos);
-
-
-    Console.WriteLine();
-    Console.WriteLine("map: ");
-
-
 }
 
 var ans = 0;
@@ -56,10 +72,19 @@ var ans = 0;
 for (int y = 0; y < map.Count; y++)
 {
 
-    for (int x = 0; x < map.Count; x++)
+    for (int x = 0; x < map[y].Count; x++)
     {
-        if (map[y][x] == 'O')
+        if (map[y][x] == '[')
         {
+            var distFromEdge = x;
+            // var len = map[y].Count;
+            // //check closeness to edge 
+            // if (x > (len / 2) + 1)
+            // {
+            //     distFromEdge = x + 1;
+            // }
+
+            Console.WriteLine((100 * y) + distFromEdge);
             ans += (100 * y) + x;
         }
 
@@ -72,6 +97,8 @@ foreach (var l in map)
     Console.WriteLine();
 }
 Console.WriteLine(ans);
+Console.WriteLine(map.Count());
+Console.WriteLine(map[0].Count);
 
 bool move(List<List<char>> map, char dir, (int, int) pos)
 {
@@ -83,7 +110,6 @@ bool move(List<List<char>> map, char dir, (int, int) pos)
 
     if (dir == '^')
     {
-
         delta_y = -1;
     }
 
@@ -108,11 +134,53 @@ bool move(List<List<char>> map, char dir, (int, int) pos)
     {
         return false;
     }
-    if (map[pos.Item1 + delta_y][pos.Item2 + delta_x] == 'O')
+    if (map[pos.Item1 + delta_y][pos.Item2 + delta_x] == '[')
     {
-        canMove = move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+        var boxMove = false;
+        if (dir == '^' || dir == 'v')
+        {
+            //check if both boxes can move up [ then ]
+            boxMove = check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x)) && check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 + 1 + delta_x));
+            if (boxMove)
+            {
+                move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+                move(map, dir, (pos.Item1 + delta_y, pos.Item2 + 1 + delta_x));
+            }
+            canMove = boxMove;
+        }
+
+        if (dir == '<' || dir == '>')
+        {
+            //move as normal basically?
+            canMove = move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+        }
+
 
     }
+    if (map[pos.Item1 + delta_y][pos.Item2 + delta_x] == ']')
+    {
+        var boxMove = false;
+        if (dir == '^' || dir == 'v')
+        {
+            //check if both boxes can move up ] then [
+            boxMove = check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x)) && check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 - 1 + delta_x));
+            if (boxMove)
+            {
+                move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+                move(map, dir, (pos.Item1 + delta_y, pos.Item2 - 1 + delta_x));
+            }
+            canMove = boxMove;
+        }
+
+        if (dir == '<' || dir == '>')
+        {
+            //move as normal basically?
+            canMove = move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+        }
+
+
+    }
+
     if (canMove)
     {
         //swap
@@ -124,6 +192,82 @@ bool move(List<List<char>> map, char dir, (int, int) pos)
         {
             robot_pos = (pos.Item1 + delta_y, pos.Item2 + delta_x);
         }
+    }
+
+    return canMove;
+}
+
+
+bool check_move(List<List<char>> map, char dir, (int, int) pos)
+{
+    var canMove = true;
+    var delta_y = 0;
+    var delta_x = 0;
+    var isRobot = map[pos.Item1][pos.Item2] == '@';
+
+
+    if (dir == '^')
+    {
+        delta_y = -1;
+    }
+
+    if (dir == 'v')
+    {
+
+        delta_y = 1;
+    }
+    if (dir == '<')
+    {
+
+        delta_x = -1;
+    }
+    if (dir == '>')
+    {
+
+        delta_x = 1;
+    }
+
+
+    if (map[pos.Item1 + delta_y][pos.Item2 + delta_x] == '#')
+    {
+        return false;
+    }
+    if (map[pos.Item1 + delta_y][pos.Item2 + delta_x] == '[')
+    {
+        var boxMove = false;
+        if (dir == '^' || dir == 'v')
+        {
+            //check if both boxes can move up [ then ]
+            boxMove = check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x)) && check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 + 1 + delta_x));
+            canMove = boxMove;
+        }
+
+        if (dir == '<' || dir == '>')
+        {
+            //move as normal basically?
+            canMove = move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+        }
+
+
+    }
+    if (map[pos.Item1 + delta_y][pos.Item2 + delta_x] == ']')
+    {
+        var boxMove = false;
+        if (dir == '^' || dir == 'v')
+        {
+            //check if both boxes can move up ] then [
+            boxMove = check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x)) && check_move(map, dir, (pos.Item1 + delta_y, pos.Item2 - 1 + delta_x));
+
+            canMove = boxMove;
+        }
+
+        if (dir == '<' || dir == '>')
+        {
+            //move as normal basically?
+            canMove = move(map, dir, (pos.Item1 + delta_y, pos.Item2 + delta_x));
+        }
+
+
     }
 
     return canMove;
