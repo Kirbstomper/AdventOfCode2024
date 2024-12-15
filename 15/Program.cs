@@ -83,37 +83,23 @@ bool move(List<List<char>> map, char dir, (int, int) pos)
 
     if (dir == '^')
     {
-        if (pos.Item1 == 1)
-        {
 
-            return false;
-        }
         delta_y = -1;
     }
 
     if (dir == 'v')
     {
-        if (pos.Item1 == map.Count - 2)
-        {
-            return false;
-        }
+
         delta_y = 1;
     }
     if (dir == '<')
     {
-        if (pos.Item2 == 1)
-        {
 
-            return false;
-        }
         delta_x = -1;
     }
     if (dir == '>')
     {
-        if (pos.Item2 == map[0].Count - 2)
-        {
-            return false;
-        }
+
         delta_x = 1;
     }
 
